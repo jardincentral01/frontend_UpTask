@@ -318,7 +318,6 @@ const ProyectosProvider = ({children}) => {
     }
 
     const completarTarea = async (id) =>{
-        setSpinner(true)
         try {
             const token = localStorage.getItem("token")
             if(!token) throw "No Tienes Acceso."
@@ -336,7 +335,6 @@ const ProyectosProvider = ({children}) => {
         } catch (error) {
             console.log(error.response.data)
         }
-        setSpinner(false)
     }
 
     const handleBuscador = () =>{

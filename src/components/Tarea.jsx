@@ -1,13 +1,24 @@
 import formatearFecha from "../helpers/formatearFecha"
 import useProyectos from "../hooks/useProyectos"
+import useAuth from "../hooks/useAuth"
 import useAdmin from "../hooks/useAdmin"
+import { useState } from "react"
 
 const Tarea = ({tarea}) => {
 
-    const { handleModalEditarTarea, handleModalEliminarTarea, completarTarea, spinner } = useProyectos()
+    const [ spinner, setSpinner ] = useState(false)
+    const { handleModalEditarTarea, handleModalEliminarTarea, completarTarea } = useProyectos()
+    const { auth } = useAuth()
+    const admin = useAdmin()
+
     const { _id, nombre, descripcion, fechaEntrega, prioridad, estado, completado} = tarea
 
-    const admin = useAdmin()
+    const handleCompletar = async () =>{
+        if(completado != null &&  auth._id != completado._id) return
+        setSpinner(true)
+        await completarTarea(_id)
+        setSpinner(false)
+    }
 
     return (
         <div className="border-b flex justify-between items-center px-3 md:px-5 py-5">
@@ -22,7 +33,7 @@ const Tarea = ({tarea}) => {
             <div className="flex flex-col lg:flex-row gap-2">
                 {admin && (<button onClick={() => handleModalEditarTarea(tarea)} className="bg-indigo-600 hover:bg-indigo-700 transition-colors px-4 py-3 text-white uppercase font-bold text-sm rounded-lg">Editar</button>)}
 
-                <button className={`${estado ? "bg-sky-600 hover:bg-sky-700" : "bg-gray-600 hover:bg-gray-700"} transition-colors px-4 py-3 text-white uppercase font-bold text-sm rounded-lg relative`} onClick={() => completarTarea(_id)} disabled={`${spinner ? "disabled" : ""}`}>
+                <button className={`${estado ? "bg-sky-600 hover:bg-sky-700" : "bg-gray-600 hover:bg-gray-700"} transition-colors px-4 py-3 text-white uppercase font-bold text-sm rounded-lg relative`} onClick={handleCompletar} disabled={`${spinner ? "disabled" : ""}`}>
                     {spinner && (
                         <>
                             <div className="absolute top-0 start-0 w-full h-full bg-white/[.6] z-50 rounded-lg"></div>
